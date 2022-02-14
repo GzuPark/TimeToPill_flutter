@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:time_to_pill/components/project_colors.dart';
-import 'package:time_to_pill/pages/add/add_page.dart';
+import 'package:time_to_pill/components/project_page_route.dart';
+import 'package:time_to_pill/pages/add/add_pill_page.dart';
 import 'package:time_to_pill/pages/history/history_page.dart';
 import 'package:time_to_pill/pages/today/today_page.dart';
 
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
   void _onRouteAddPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddPage()),
+      FadePageRoute(page: const AddPillPage()),
     );
   }
 }

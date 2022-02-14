@@ -4,21 +4,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/components/project_page_route.dart';
+import 'package:time_to_pill/pages/add/add_alarm_page.dart';
 
-class AddPage extends StatefulWidget {
-  const AddPage({Key? key}) : super(key: key);
+class AddPillPage extends StatefulWidget {
+  const AddPillPage({Key? key}) : super(key: key);
 
   @override
-  State<AddPage> createState() => _AddPageState();
+  State<AddPillPage> createState() => _AddPillPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _AddPillPageState extends State<AddPillPage> {
   // Control to input the pill's name
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _pillNameController = TextEditingController();
+  File? _pillImage;
 
   @override
   void dispose() {
-    _textController.dispose();
+    _pillNameController.dispose();
     super.dispose();
   }
 
@@ -42,8 +45,10 @@ class _AddPageState extends State<AddPage> {
                   style: Theme.of(context).textTheme.headline4,
                 ),
                 const SizedBox(height: regularSpace),
-                const Center(
-                  child: PillImageButton(),
+                Center(
+                  child: PillImageButton(
+                    changedImageFile: (File? value) => _pillImage = value,
+                  ),
                 ),
                 const SizedBox(height: largeSpace),
                 Text(
@@ -51,13 +56,14 @@ class _AddPageState extends State<AddPage> {
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
                 TextFormField(
-                  controller: _textController,
+                  controller: _pillNameController,
+                  onChanged: (_) => setState(() {}),
                   maxLength: 20,
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.done,
                   style: Theme.of(context).textTheme.bodyText1,
                   decoration: InputDecoration(
-                    hintText: '약 이름 입력',
+                    hintText: '복용할 약 이름을 입력해주세요.',
                     hintStyle: Theme.of(context).textTheme.bodyText2,
                     contentPadding: textFiledContentPadding,
                   ),
@@ -75,9 +81,21 @@ class _AddPageState extends State<AddPage> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(textStyle: Theme.of(context).textTheme.subtitle1),
               child: const Text('다음'),
-              onPressed: () {},
+              onPressed: _pillNameController.text.isEmpty ? null : _routeAddAlarmPage,
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _routeAddAlarmPage() {
+    Navigator.push(
+      context,
+      FadePageRoute(
+        page: AddAlarmPage(
+          pillImage: _pillImage,
+          pillName: _pillNameController.text,
         ),
       ),
     );
@@ -86,7 +104,13 @@ class _AddPageState extends State<AddPage> {
 
 /// This widget from the CircleAvatar which located in the center of the HomePage
 class PillImageButton extends StatefulWidget {
-  const PillImageButton({Key? key}) : super(key: key);
+  const PillImageButton({
+    Key? key,
+    required this.changedImageFile,
+  }) : super(key: key);
+
+  /// Connect a variable with the upper layer state
+  final ValueChanged<File?> changedImageFile;
 
   @override
   State<PillImageButton> createState() => _PillImageButtonState();
@@ -135,7 +159,10 @@ class _PillImageButtonState extends State<PillImageButton> {
   void _onPressed(ImageSource source) {
     ImagePicker().pickImage(source: source).then((xFile) {
       if (xFile != null) {
-        setState(() => _pickedImage = File(xFile.path));
+        setState(() {
+          _pickedImage = File(xFile.path);
+          widget.changedImageFile(_pickedImage);
+        });
       }
       Navigator.maybePop(context);
     });
