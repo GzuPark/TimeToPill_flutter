@@ -25,9 +25,7 @@ class _HomePageState extends State<HomePage> {
       /// cover to top notch
       top: false,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-        ),
+        appBar: AppBar(),
         body: _pages[_currentIndex],
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(

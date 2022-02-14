@@ -9,6 +9,7 @@ class ProjectThemes {
         brightness: Brightness.light,
         fontFamily: 'Gaegu',
         textTheme: _textTheme,
+        appBarTheme: _appBarTheme,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       );
 
@@ -20,6 +21,12 @@ class ProjectThemes {
         textTheme: _textTheme,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       );
+
+  static const AppBarTheme _appBarTheme = AppBarTheme(
+    backgroundColor: Colors.white,
+    iconTheme: IconThemeData(color: ProjectColors.primaryColor),
+    elevation: 0.0,
+  );
 
   static const TextTheme _textTheme = TextTheme(
     headline4: TextStyle(fontSize: 32, fontWeight: FontWeight.w400),
