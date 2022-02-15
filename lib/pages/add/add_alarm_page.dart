@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:time_to_pill/components/project_colors.dart';
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
+import 'package:time_to_pill/services/add_pill_service.dart';
 
 import 'components/add_page_widget.dart';
 
 class AddAlarmPage extends StatelessWidget {
-  const AddAlarmPage({
+  AddAlarmPage({
     Key? key,
     required this.pillImage,
     required this.pillName,
@@ -17,6 +19,7 @@ class AddAlarmPage extends StatelessWidget {
 
   final File? pillImage;
   final String pillName;
+  final _service = AddPillService();
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +33,13 @@ class AddAlarmPage extends StatelessWidget {
           ),
           const SizedBox(height: largeSpace),
           Expanded(
-            child: ListView(
-              children: const [
-                AlarmBox(),
-                AlarmBox(),
-                AlarmBox(),
-                AddAlarmButton(),
-              ],
+            child: AnimatedBuilder(
+              animation: _service,
+              builder: (BuildContext context, _) {
+                return ListView(
+                  children: alarmWidgets,
+                );
+              },
             ),
           ),
         ],
@@ -47,10 +50,40 @@ class AddAlarmPage extends StatelessWidget {
       ),
     );
   }
+
+  List<Widget> get alarmWidgets {
+    final children = <Widget>[];
+
+    /// Add lines for AlarmBox with - icon
+    children.addAll(
+      _service.alarms.map(
+        (alarmTime) => AlarmBox(
+          time: alarmTime,
+          service: _service,
+        ),
+      ),
+    );
+
+    /// Add last line for AddAlarmButton with + icon
+    children.add(
+      AddAlarmButton(
+        service: _service,
+      ),
+    );
+
+    return children;
+  }
 }
 
 class AlarmBox extends StatelessWidget {
-  const AlarmBox({Key? key}) : super(key: key);
+  const AlarmBox({
+    Key? key,
+    required this.time,
+    required this.service,
+  }) : super(key: key);
+
+  final String time;
+  final AddPillService service;
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +92,14 @@ class AlarmBox extends StatelessWidget {
         Expanded(
           flex: 1,
           child: IconButton(
-            icon: const Icon(CupertinoIcons.minus),
-            onPressed: () {},
+            icon: const Icon(CupertinoIcons.minus_circle),
+            onPressed: () => service.removeAlarm(time),
           ),
         ),
         Expanded(
           flex: 5,
           child: TextButton(
-            child: const Text("18:00"),
+            child: Text(time),
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.subtitle2,
             ),
@@ -74,30 +107,10 @@ class AlarmBox extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
-                  return BottomSheetBody(
-                    children: [
-                      SizedBox(
-                        height: timePickerBoxHeight,
-                        child: CupertinoDatePicker(
-                          mode: CupertinoDatePickerMode.time,
-                          onDateTimeChanged: (dateTime) {},
-                        ),
-                      ),
-                      const SizedBox(height: regularSpace),
-                      Row(
-                        children: const [
-                          SelectButton(
-                            text: '취소',
-                            isPriority: false,
-                          ),
-                          SizedBox(width: smallSpace),
-                          SelectButton(
-                            text: '선택',
-                            isPriority: true,
-                          ),
-                        ],
-                      ),
-                    ],
+                  final _initTime = DateFormat('HH:mm').parse(time);
+                  return TimePickerBottomSheet(
+                    initTime: _initTime,
+                    onPressed: () {},
                   );
                 },
               );
@@ -110,7 +123,12 @@ class AlarmBox extends StatelessWidget {
 }
 
 class AddAlarmButton extends StatelessWidget {
-  const AddAlarmButton({Key? key}) : super(key: key);
+  const AddAlarmButton({
+    Key? key,
+    required this.service,
+  }) : super(key: key);
+
+  final AddPillService service;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +149,50 @@ class AddAlarmButton extends StatelessWidget {
           ),
         ],
       ),
-      onPressed: () {},
+      onPressed: service.addNowAlarm,
+    );
+  }
+}
+
+class TimePickerBottomSheet extends StatelessWidget {
+  const TimePickerBottomSheet({
+    Key? key,
+    required this.initTime,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final DateTime? initTime;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomSheetBody(
+      children: [
+        SizedBox(
+          height: timePickerBoxHeight,
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.time,
+            initialDateTime: initTime,
+            onDateTimeChanged: (dateTime) {},
+          ),
+        ),
+        const SizedBox(height: regularSpace),
+        Row(
+          children: [
+            SelectButton(
+              text: '취소',
+              isPriority: false,
+              onPressed: () {},
+            ),
+            const SizedBox(width: smallSpace),
+            SelectButton(
+              text: '선택',
+              isPriority: true,
+              onPressed: onPressed,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -142,10 +203,12 @@ class SelectButton extends StatelessWidget {
     Key? key,
     required this.text,
     required this.isPriority,
+    required this.onPressed,
   }) : super(key: key);
 
   final String text;
   final bool isPriority;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +220,7 @@ class SelectButton extends StatelessWidget {
           primary: isPriority ? null : Colors.white,
           onPrimary: isPriority ? null : ProjectColors.primaryColor,
         ),
-        onPressed: () {},
+        onPressed: onPressed,
       ),
     );
   }
