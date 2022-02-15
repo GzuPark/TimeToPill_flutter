@@ -7,6 +7,8 @@ import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/pages/add/add_alarm_page.dart';
 
+import 'components/add_page_widget.dart';
+
 class AddPillPage extends StatefulWidget {
   const AddPillPage({Key? key}) : super(key: key);
 
@@ -32,59 +34,42 @@ class _AddPillPageState extends State<AddPillPage> {
         leading: const CloseButton(),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: pagePadding,
-          // This gesture to hide the keyboard if click the Column area without TextFormField
-          child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '어떤 약이에요?',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                const SizedBox(height: regularSpace),
-                Center(
-                  child: PillImageButton(
-                    changedImageFile: (File? value) => _pillImage = value,
-                  ),
-                ),
-                const SizedBox(height: largeSpace),
-                Text(
-                  '약 이름',
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-                TextFormField(
-                  controller: _pillNameController,
-                  onChanged: (_) => setState(() {}),
-                  maxLength: 20,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.done,
-                  style: Theme.of(context).textTheme.bodyText1,
-                  decoration: InputDecoration(
-                    hintText: '복용할 약 이름을 입력해주세요.',
-                    hintStyle: Theme.of(context).textTheme.bodyText2,
-                    contentPadding: textFiledContentPadding,
-                  ),
-                ),
-              ],
+        child: AddPageBody(
+          children: [
+            Text(
+              '어떤 약이에요?',
+              style: Theme.of(context).textTheme.headline4,
             ),
-          ),
+            const SizedBox(height: regularSpace),
+            Center(
+              child: PillImageButton(
+                changedImageFile: (File? value) => _pillImage = value,
+              ),
+            ),
+            const SizedBox(height: largeSpace),
+            Text(
+              '약 이름',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            TextFormField(
+              controller: _pillNameController,
+              onChanged: (_) => setState(() {}),
+              maxLength: 20,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.done,
+              style: Theme.of(context).textTheme.bodyText1,
+              decoration: InputDecoration(
+                hintText: '복용할 약 이름을 입력해주세요.',
+                hintStyle: Theme.of(context).textTheme.bodyText2,
+                contentPadding: textFiledContentPadding,
+              ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: submitButtonBoxPadding,
-        child: SafeArea(
-          child: SizedBox(
-            height: submitButtonHeight,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(textStyle: Theme.of(context).textTheme.subtitle1),
-              child: const Text('다음'),
-              onPressed: _pillNameController.text.isEmpty ? null : _routeAddAlarmPage,
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomSubmitButton(
+        onPressed: _pillNameController.text.isEmpty ? null : _routeAddAlarmPage,
+        text: '다음',
       ),
     );
   }

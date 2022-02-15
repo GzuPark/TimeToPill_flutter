@@ -30,3 +30,10 @@ const EdgeInsetsGeometry submitButtonBoxPadding = EdgeInsets.symmetric(
   horizontal: 20.0,
   vertical: 10.0,
 );
+
+/// `horizontal`: 0.0
+/// `vertical`: 6.0
+const EdgeInsetsGeometry addAlarmButtonPadding = EdgeInsets.symmetric(
+  horizontal: 0.0,
+  vertical: 6.0,
+);
