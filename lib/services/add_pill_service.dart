@@ -22,4 +22,18 @@ class AddPillService with ChangeNotifier {
     _alarms.remove(alarmTime);
     notifyListeners();
   }
+
+  /// 1. Remove previous time which stored in the alarm list
+  /// 2. Add new time which is selected from the TimePicker
+  void setAlarm({
+    required String prevTime,
+    required DateTime setTime,
+  }) {
+    _alarms.remove(prevTime);
+
+    final setTimeStr = DateFormat('HH:mm').format(setTime);
+    _alarms.add(setTimeStr);
+
+    notifyListeners();
+  }
 }

@@ -75,6 +75,8 @@ class AddAlarmPage extends StatelessWidget {
   }
 }
 
+/// Create time typed alarm widget with - icon
+/// This widget is part of showed alarm list: each line
 class AlarmBox extends StatelessWidget {
   const AlarmBox({
     Key? key,
@@ -107,10 +109,9 @@ class AlarmBox extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
-                  final _initTime = DateFormat('HH:mm').parse(time);
                   return TimePickerBottomSheet(
-                    initTime: _initTime,
-                    onPressed: () {},
+                    initTime: time,
+                    service: service,
                   );
                 },
               );
@@ -122,6 +123,8 @@ class AlarmBox extends StatelessWidget {
   }
 }
 
+/// To add new alarm time widget with + icon
+/// It will add present time (a.k.a. Now()) automatically
 class AddAlarmButton extends StatelessWidget {
   const AddAlarmButton({
     Key? key,
@@ -158,22 +161,25 @@ class TimePickerBottomSheet extends StatelessWidget {
   const TimePickerBottomSheet({
     Key? key,
     required this.initTime,
-    required this.onPressed,
+    required this.service,
   }) : super(key: key);
 
-  final DateTime? initTime;
-  final VoidCallback? onPressed;
+  final String initTime;
+  final AddPillService service;
 
   @override
   Widget build(BuildContext context) {
+    final _initTime = DateFormat('HH:mm').parse(initTime);
+    late DateTime? _setTime;
+
     return BottomSheetBody(
       children: [
         SizedBox(
           height: timePickerBoxHeight,
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.time,
-            initialDateTime: initTime,
-            onDateTimeChanged: (dateTime) {},
+            initialDateTime: _initTime,
+            onDateTimeChanged: (dateTime) => _setTime = dateTime,
           ),
         ),
         const SizedBox(height: regularSpace),
@@ -182,13 +188,19 @@ class TimePickerBottomSheet extends StatelessWidget {
             SelectButton(
               text: '취소',
               isPriority: false,
-              onPressed: () {},
+              onPressed: () => Navigator.pop(context),
             ),
             const SizedBox(width: smallSpace),
             SelectButton(
               text: '선택',
               isPriority: true,
-              onPressed: onPressed,
+              onPressed: () {
+                service.setAlarm(
+                  prevTime: initTime,
+                  setTime: _setTime ?? _initTime,
+                );
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
