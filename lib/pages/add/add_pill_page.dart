@@ -151,6 +151,10 @@ class _PillImageButtonState extends State<PillImageButton> {
         });
       }
       Navigator.maybePop(context);
+    }).onError((error, stackTrace) {
+      /// Show the snack bar & request the permissions
+      Navigator.pop(context);
+      showPermissionDenied(context, permission: '카메라 및 사진 접근');
     });
   }
 }

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_pill/components/project_themes.dart';
 import 'package:time_to_pill/pages/home_page.dart';
+import 'package:time_to_pill/services/notification_service.dart';
 
-void main() {
+final notification = NotificationService();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await notification.initializeTimezone();
+  await notification.initializeNotification();
+
   runApp(const TimeToPillApp());
 }
 
