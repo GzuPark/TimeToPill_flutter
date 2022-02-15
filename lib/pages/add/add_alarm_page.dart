@@ -8,6 +8,7 @@ import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/services/add_pill_service.dart';
+import 'package:time_to_pill/services/file_service.dart';
 
 import 'components/add_page_widget.dart';
 
@@ -48,17 +49,25 @@ class AddAlarmPage extends StatelessWidget {
       bottomNavigationBar: BottomSubmitButton(
         text: '완료',
         onPressed: () async {
-          bool result = false;
+          /// Add Notifications
+          bool permitNotification = false;
 
           for (var alarm in _service.alarms) {
-            result = await notification.addNotification(
+            permitNotification = await notification.addNotification(
               alarmTimeStr: alarm,
               title: '$alarm 약 먹을 시간이에요',
               body: '$pillName 복약했다고 알려주세요',
             );
           }
 
-          if (!result) showPermissionDenied(context, permission: '알람');
+          if (!permitNotification) showPermissionDenied(context, permission: '알람');
+
+          /// Save the image to local device
+          late String? imageFilePath;
+
+          if (pillImage != null) {
+            imageFilePath = await saveImageToLocalDirectory(pillImage!);
+          }
         },
       ),
     );
