@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:time_to_pill/components/project_colors.dart';
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/components/project_widgets.dart';
 
 import 'components/add_page_widget.dart';
 
@@ -68,7 +70,38 @@ class AlarmBox extends StatelessWidget {
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.subtitle2,
             ),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return BottomSheetBody(
+                    children: [
+                      SizedBox(
+                        height: timePickerBoxHeight,
+                        child: CupertinoDatePicker(
+                          mode: CupertinoDatePickerMode.time,
+                          onDateTimeChanged: (dateTime) {},
+                        ),
+                      ),
+                      const SizedBox(height: regularSpace),
+                      Row(
+                        children: const [
+                          SelectButton(
+                            text: '취소',
+                            isPriority: false,
+                          ),
+                          SizedBox(width: smallSpace),
+                          SelectButton(
+                            text: '선택',
+                            isPriority: true,
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ),
       ],
@@ -99,6 +132,33 @@ class AddAlarmButton extends StatelessWidget {
         ],
       ),
       onPressed: () {},
+    );
+  }
+}
+
+/// Choice between 'Cancel' and 'Confirm' below TimePicker components
+class SelectButton extends StatelessWidget {
+  const SelectButton({
+    Key? key,
+    required this.text,
+    required this.isPriority,
+  }) : super(key: key);
+
+  final String text;
+  final bool isPriority;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ElevatedButton(
+        child: Text(text),
+        style: ElevatedButton.styleFrom(
+          textStyle: Theme.of(context).textTheme.subtitle1,
+          primary: isPriority ? null : Colors.white,
+          onPrimary: isPriority ? null : ProjectColors.primaryColor,
+        ),
+        onPressed: () {},
+      ),
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// 200.0
+const double timePickerBoxHeight = 200.0;
+
 /// 10.0
 const double smallSpace = 10.0;
 
