@@ -9,6 +9,7 @@ import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
+import 'package:time_to_pill/pages/today/today_empty_widget.dart';
 
 class TodayPage extends StatelessWidget {
   const TodayPage({Key? key}) : super(key: key);
@@ -23,7 +24,6 @@ class TodayPage extends StatelessWidget {
           style: Theme.of(context).textTheme.headline4,
         ),
         const SizedBox(height: regularSpace),
-        const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
         Expanded(
           /// Automatically check to change in the Hive box
           child: ValueListenableBuilder(
@@ -31,14 +31,16 @@ class TodayPage extends StatelessWidget {
             builder: _buildPillListView,
           ),
         ),
-        const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
       ],
     );
   }
 
-  ListView _buildPillListView(BuildContext context, Box<Pill> box, _) {
+  Widget _buildPillListView(BuildContext context, Box<Pill> box, _) {
     final pills = box.values.toList();
     final pillAlarms = <PillAlarm>[];
+
+    /// Check emptiness
+    if (pills.isEmpty) return const TodayEmpty();
 
     /// Each pill has several alarms, in other words that Pill class has more than one alarm time in the list
     /// Therefore, create a new list for ListView: total length = each pill * number of its alarm list
@@ -57,11 +59,19 @@ class TodayPage extends StatelessWidget {
       }
     }
 
-    return ListView.separated(
-      padding: pillListTilePadding,
-      itemCount: pillAlarms.length,
-      itemBuilder: (BuildContext context, int index) => PillListTile(pillAlarm: pillAlarms[index]),
-      separatorBuilder: (BuildContext context, _) => const Divider(height: regularSpace),
+    return Column(
+      children: [
+        const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
+        Expanded(
+          child: ListView.separated(
+            padding: pillListTilePadding,
+            itemCount: pillAlarms.length,
+            itemBuilder: (BuildContext context, int index) => PillListTile(pillAlarm: pillAlarms[index]),
+            separatorBuilder: (BuildContext context, _) => const Divider(height: regularSpace),
+          ),
+        ),
+        const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
+      ],
     );
   }
 }

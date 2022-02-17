@@ -25,7 +25,7 @@ const double radiusCircleAvatar = 40.0;
 const double sectionDividerHeight = 1.0;
 
 /// 2.0
-const double sectionDividerThickness = 2.0;
+const double sectionDividerThickness = 1.0;
 
 /// `horizontal`: 20.0
 /// `vertical`: 10.0
