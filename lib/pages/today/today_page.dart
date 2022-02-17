@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
@@ -82,13 +83,17 @@ class PillListTile extends StatelessWidget {
         /// Check the image path is null or not in the CircleAvatar (foregroundImage method)
         /// This action occurs to when the save the pill information without any image from the gallery or camera
         /// The pill's image is not required in this application, so we allow to save the pill without the image
+        /// Show fitted size of the original image if the imagePath is not null
+        /// Otherwise, the Button cannot activate if the imagePath is null
         CupertinoButton(
           padding: EdgeInsets.zero,
           child: CircleAvatar(
             radius: radiusCircleAvatar,
             foregroundImage: pillAlarm.imagePath == null ? null : FileImage(File(pillAlarm.imagePath!)),
           ),
-          onPressed: () {},
+          onPressed: pillAlarm.imagePath == null
+              ? null
+              : () => Navigator.push(context, FadePageRoute(page: ImageDetailPage(imagePath: pillAlarm.imagePath!))),
         ),
         const SizedBox(width: smallSpace),
         Expanded(
@@ -144,6 +149,30 @@ class TileActionButton extends StatelessWidget {
       child: Padding(
         padding: textFiledContentPadding,
         child: Text(title, style: buttonTextStyle),
+      ),
+    );
+  }
+}
+
+/// Show magnified Pill's image if the imagePath is not null
+class ImageDetailPage extends StatelessWidget {
+  const ImageDetailPage({
+    Key? key,
+    required this.imagePath,
+  }) : super(key: key);
+
+  final String imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: const CloseButton(),
+      ),
+      body: Center(
+        child: Image.file(
+          File(imagePath),
+        ),
       ),
     );
   }

@@ -67,7 +67,7 @@ class AddAlarmPage extends StatelessWidget {
           if (!permitNotification) return showPermissionDenied(context, permission: '알람');
 
           /// Save the image to local device
-          late String? imageFilePath;
+          String? imageFilePath;
 
           if (pillImage != null) {
             imageFilePath = await saveImageToLocalDirectory(pillImage!);
