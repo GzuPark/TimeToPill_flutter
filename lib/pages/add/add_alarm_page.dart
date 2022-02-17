@@ -2,13 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import 'package:time_to_pill/components/project_colors.dart';
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
+import 'package:time_to_pill/pages/bottom_sheet/time_setting_bottom_sheet.dart';
 import 'package:time_to_pill/services/add_pill_service.dart';
 import 'package:time_to_pill/services/file_service.dart';
 
@@ -148,13 +147,13 @@ class AlarmBox extends StatelessWidget {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) {
-                  return TimePickerBottomSheet(
-                    initTime: time,
-                    service: service,
-                  );
-                },
-              );
+                builder: (context) => TimeSettingBottomSheet(initTime: time),
+              ).then((setTime) {
+                /// Initial value of the setTime is same as initTime
+                /// Therefore, this value always has the value and its type is DateTime
+                /// Do not need to check about setTime data and its type
+                service.setAlarm(prevTime: time, setTime: setTime);
+              });
             },
           ),
         ),
@@ -193,87 +192,6 @@ class AddAlarmButton extends StatelessWidget {
         ],
       ),
       onPressed: service.addNowAlarm,
-    );
-  }
-}
-
-class TimePickerBottomSheet extends StatelessWidget {
-  const TimePickerBottomSheet({
-    Key? key,
-    required this.initTime,
-    required this.service,
-  }) : super(key: key);
-
-  final String initTime;
-  final AddPillService service;
-
-  @override
-  Widget build(BuildContext context) {
-    final _initTime = DateFormat('HH:mm').parse(initTime);
-    late DateTime? _setTime;
-
-    return BottomSheetBody(
-      children: [
-        SizedBox(
-          height: timePickerBoxHeight,
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.time,
-            initialDateTime: _initTime,
-            onDateTimeChanged: (dateTime) => _setTime = dateTime,
-          ),
-        ),
-        const SizedBox(height: regularSpace),
-        Row(
-          children: [
-            SelectButton(
-              text: '취소',
-              isPriority: false,
-              onPressed: () => Navigator.pop(context),
-            ),
-            const SizedBox(width: smallSpace),
-            SelectButton(
-              text: '선택',
-              isPriority: true,
-              onPressed: () {
-                service.setAlarm(
-                  prevTime: initTime,
-                  setTime: _setTime ?? _initTime,
-                );
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-/// Choice between 'Cancel' and 'Confirm' below TimePicker components
-class SelectButton extends StatelessWidget {
-  const SelectButton({
-    Key? key,
-    required this.text,
-    required this.isPriority,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final String text;
-  final bool isPriority;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ElevatedButton(
-        child: Text(text),
-        style: ElevatedButton.styleFrom(
-          textStyle: Theme.of(context).textTheme.subtitle1,
-          primary: isPriority ? null : Colors.white,
-          onPrimary: isPriority ? null : ProjectColors.primaryColor,
-        ),
-        onPressed: onPressed,
-      ),
     );
   }
 }

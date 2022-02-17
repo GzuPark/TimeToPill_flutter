@@ -1,15 +1,13 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
-import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
+import 'package:time_to_pill/models/pill_history.dart';
 import 'package:time_to_pill/pages/today/today_empty_widget.dart';
+import 'package:time_to_pill/pages/today/today_taken_tile.dart';
 
 class TodayPage extends StatelessWidget {
   const TodayPage({Key? key}) : super(key: key);
@@ -53,7 +51,7 @@ class TodayPage extends StatelessWidget {
             id: pill.id,
             name: pill.name,
             imagePath: pill.imagePath,
-            alarm: alarm,
+            alarmTime: alarm,
           ),
         );
       }
@@ -66,7 +64,9 @@ class TodayPage extends StatelessWidget {
           child: ListView.separated(
             padding: pillListTilePadding,
             itemCount: pillAlarms.length,
-            itemBuilder: (BuildContext context, int index) => PillListTile(pillAlarm: pillAlarms[index]),
+            itemBuilder: (BuildContext context, int index) {
+              return _buildListTile(pillAlarms[index]);
+            },
             separatorBuilder: (BuildContext context, _) => const Divider(height: regularSpace),
           ),
         ),
@@ -74,116 +74,42 @@ class TodayPage extends StatelessWidget {
       ],
     );
   }
-}
 
-class PillListTile extends StatelessWidget {
-  const PillListTile({
-    Key? key,
-    required this.pillAlarm,
-  }) : super(key: key);
+  /// Choice the [Before||After]TakenTile style
+  /// Return BeforeTakenTile if today's history is empty or do not check to take pills
+  ///   List.singleWhere must return any result, so return dummy value if the history do not have appropriate data in the list
+  /// Return AfterTakenTile if all conditions match
+  Widget _buildListTile(PillAlarm pillAlarm) {
+    return ValueListenableBuilder(
+      valueListenable: historyRepository.historyBox.listenable(),
+      builder: (BuildContext context, Box<PillHistory> historyBox, _) {
+        if (historyBox.values.isEmpty) {
+          return BeforeTakenTile(pillAlarm: pillAlarm);
+        }
 
-  final PillAlarm pillAlarm;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.bodyText2;
-
-    return Row(
-      children: [
-        /// Check the image path is null or not in the CircleAvatar (foregroundImage method)
-        /// This action occurs to when the save the pill information without any image from the gallery or camera
-        /// The pill's image is not required in this application, so we allow to save the pill without the image
-        /// Show fitted size of the original image if the imagePath is not null
-        /// Otherwise, the Button cannot activate if the imagePath is null
-        CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: CircleAvatar(
-            radius: radiusCircleAvatar,
-            foregroundImage: pillAlarm.imagePath == null ? null : FileImage(File(pillAlarm.imagePath!)),
+        final todayTakeHistory = historyBox.values.singleWhere(
+          (history) =>
+              history.pillId == pillAlarm.id &&
+              history.alarmTime == pillAlarm.alarmTime &&
+              isToday(history.takenTime, DateTime.now()),
+          orElse: () => PillHistory(
+            pillId: -1,
+            alarmTime: '',
+            takenTime: DateTime.now(),
           ),
-          onPressed: pillAlarm.imagePath == null
-              ? null
-              : () => Navigator.push(context, FadePageRoute(page: ImageDetailPage(imagePath: pillAlarm.imagePath!))),
-        ),
-        const SizedBox(width: smallSpace),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('🕑 ${pillAlarm.alarm}', style: textStyle),
-              const SizedBox(height: tinySpace),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(pillAlarm.name, style: textStyle),
-                  TileActionButton(
-                    title: '지금',
-                    onTap: () {},
-                  ),
-                  Text('|', style: textStyle),
-                  TileActionButton(
-                    title: '아까',
-                    onTap: () {},
-                  ),
-                  Text('먹었어요!', style: textStyle),
-                ],
-              ),
-            ],
-          ),
-        ),
-        CupertinoButton(
-          child: const Icon(CupertinoIcons.ellipsis_vertical),
-          onPressed: () {},
-        ),
-      ],
+        );
+
+        /// Check dummy data
+        if (todayTakeHistory.pillId == -1 && todayTakeHistory.alarmTime == '') {
+          return BeforeTakenTile(pillAlarm: pillAlarm);
+        }
+
+        return AfterTakenTile(pillAlarm: pillAlarm);
+      },
     );
   }
-}
 
-class TileActionButton extends StatelessWidget {
-  const TileActionButton({
-    Key? key,
-    required this.title,
-    required this.onTap,
-  }) : super(key: key);
-
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final buttonTextStyle = Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w500);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: textFiledContentPadding,
-        child: Text(title, style: buttonTextStyle),
-      ),
-    );
-  }
-}
-
-/// Show magnified Pill's image if the imagePath is not null
-class ImageDetailPage extends StatelessWidget {
-  const ImageDetailPage({
-    Key? key,
-    required this.imagePath,
-  }) : super(key: key);
-
-  final String imagePath;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-      ),
-      body: Center(
-        child: Image.file(
-          File(imagePath),
-        ),
-      ),
-    );
+  bool isToday(DateTime source, DateTime destination) {
+    return source.year == destination.year && source.month == destination.month && source.day == destination.day;
   }
 }
