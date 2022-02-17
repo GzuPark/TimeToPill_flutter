@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:time_to_pill/components/project_colors.dart';
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
 import 'package:time_to_pill/main.dart';
+import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/services/add_pill_service.dart';
 import 'package:time_to_pill/services/file_service.dart';
 
@@ -54,13 +56,15 @@ class AddAlarmPage extends StatelessWidget {
 
           for (var alarm in _service.alarms) {
             permitNotification = await notification.addNotification(
+              pillId: pillRepository.newId,
               alarmTimeStr: alarm,
               title: '$alarm 약 먹을 시간이에요',
               body: '$pillName 복약했다고 알려주세요',
             );
           }
 
-          if (!permitNotification) showPermissionDenied(context, permission: '알람');
+          /// Stop the process if the notification is not permitted
+          if (!permitNotification) return showPermissionDenied(context, permission: '알람');
 
           /// Save the image to local device
           late String? imageFilePath;
@@ -68,6 +72,20 @@ class AddAlarmPage extends StatelessWidget {
           if (pillImage != null) {
             imageFilePath = await saveImageToLocalDirectory(pillImage!);
           }
+
+          /// Create new Pill instance with the information
+          final pill = Pill(
+            id: pillRepository.newId,
+            name: pillName,
+            imagePath: imageFilePath,
+            alarms: _service.alarms.toList(),
+          );
+
+          /// Save the Pill instance to the Hive
+          pillRepository.addPill(pill);
+
+          /// Pop the pages until the HomePage (root or starting page)
+          Navigator.popUntil(context, (route) => route.isFirst);
         },
       ),
     );

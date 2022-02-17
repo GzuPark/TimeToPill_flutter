@@ -40,6 +40,7 @@ class NotificationService {
   ///   title: HH:mm 약 먹을 시간이에요!
   ///   body: pillName 복약했다고 알려주세요!
   Future<bool> addNotification({
+    required int pillId,
     required String alarmTimeStr,
     required String title,
     required String body,
@@ -59,6 +60,7 @@ class NotificationService {
 
     /// Unique ID
     String alarmTimeId = alarmTimeStr.replaceAll(':', '');
+    alarmTimeId = pillId.toString() + alarmTimeId;
 
     /// Add scheduled notification
     final details = _notificationDetails(
