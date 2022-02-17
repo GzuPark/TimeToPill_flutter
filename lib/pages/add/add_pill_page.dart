@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
@@ -108,18 +109,18 @@ class _PillImageButtonState extends State<PillImageButton> {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius: 40.0,
+      radius: radiusCircleAvatar,
       child: CupertinoButton(
         onPressed: _buildShowModalBottomSheet,
         padding: _pickedImage == null ? null : EdgeInsets.zero,
         child: _pickedImage == null
             ? const Icon(
                 CupertinoIcons.photo_camera_solid,
-                size: 30.0,
+                size: radiusCircleAvatar * 0.9,
                 color: Colors.white,
               )
             : CircleAvatar(
-                radius: 40.0,
+                radius: radiusCircleAvatar,
                 foregroundImage: FileImage(_pickedImage!),
               ),
       ),
