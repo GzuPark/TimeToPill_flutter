@@ -1,16 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/main.dart';
+import 'package:time_to_pill/models/pill.dart';
+import 'package:time_to_pill/models/pill_alarm.dart';
 
 class TodayPage extends StatelessWidget {
-  TodayPage({Key? key}) : super(key: key);
-
-  final list = [
-    '약',
-    '약 이름',
-    '약을먹자약을먹자약을먹자약을먹자약을먹자',
-  ];
+  const TodayPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +24,43 @@ class TodayPage extends StatelessWidget {
         const SizedBox(height: regularSpace),
         const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
         Expanded(
-          child: ListView.separated(
-            padding: pillListTilePadding,
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              return PillListTile(
-                name: list[index],
-                time: '08:00',
-                imagePath: '',
-              );
-            },
-            separatorBuilder: (context, _) {
-              return const Divider(height: regularSpace);
-            },
+          /// Automatically check to change in the Hive box
+          child: ValueListenableBuilder(
+            valueListenable: pillRepository.pillBox.listenable(),
+            builder: _buildPillListView,
           ),
         ),
         const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
       ],
+    );
+  }
+
+  ListView _buildPillListView(BuildContext context, Box<Pill> box, _) {
+    final pills = box.values.toList();
+    final pillAlarms = <PillAlarm>[];
+
+    /// Each pill has several alarms, in other words that Pill class has more than one alarm time in the list
+    /// Therefore, create a new list for ListView: total length = each pill * number of its alarm list
+    /// Add to the pillAlarms list as PillAlarm structure
+    for (var pill in pills) {
+      for (var alarm in pill.alarms) {
+        pillAlarms.add(
+          PillAlarm(
+            key: pill.key, // get the integer using by inheriting the HiveObject class
+            id: pill.id,
+            name: pill.name,
+            imagePath: pill.imagePath,
+            alarm: alarm,
+          ),
+        );
+      }
+    }
+
+    return ListView.separated(
+      padding: pillListTilePadding,
+      itemCount: pillAlarms.length,
+      itemBuilder: (BuildContext context, int index) => PillListTile(pillAlarm: pillAlarms[index]),
+      separatorBuilder: (BuildContext context, _) => const Divider(height: regularSpace),
     );
   }
 }
@@ -48,14 +68,10 @@ class TodayPage extends StatelessWidget {
 class PillListTile extends StatelessWidget {
   const PillListTile({
     Key? key,
-    required this.name,
-    required this.time,
-    required this.imagePath,
+    required this.pillAlarm,
   }) : super(key: key);
 
-  final String name;
-  final String time;
-  final String imagePath;
+  final PillAlarm pillAlarm;
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +79,14 @@ class PillListTile extends StatelessWidget {
 
     return Row(
       children: [
+        /// Check the image path is null or not in the CircleAvatar (foregroundImage method)
+        /// This action occurs to when the save the pill information without any image from the gallery or camera
+        /// The pill's image is not required in this application, so we allow to save the pill without the image
         CupertinoButton(
           padding: EdgeInsets.zero,
-          child: const CircleAvatar(
+          child: CircleAvatar(
             radius: radiusCircleAvatar,
+            foregroundImage: pillAlarm.imagePath == null ? null : FileImage(File(pillAlarm.imagePath!)),
           ),
           onPressed: () {},
         ),
@@ -75,12 +95,12 @@ class PillListTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(time, style: textStyle),
+              Text('🕑 ${pillAlarm.alarm}', style: textStyle),
               const SizedBox(height: tinySpace),
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(name, style: textStyle),
+                  Text(pillAlarm.name, style: textStyle),
                   TileActionButton(
                     title: '지금',
                     onTap: () {},

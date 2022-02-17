@@ -3,9 +3,10 @@ import 'package:hive/hive.dart';
 part 'pill.g.dart';
 
 /// Must run below script for generating the PillAdapter class
-/// `flutter packages pub run build_runner build`
+///   `flutter packages pub run build_runner build`
+/// HiveObject helps to get the key value (integer)
 @HiveType(typeId: 1)
-class Pill {
+class Pill extends HiveObject {
   Pill({
     required this.id,
     required this.name,
