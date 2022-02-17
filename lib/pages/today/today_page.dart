@@ -87,7 +87,7 @@ class TodayPage extends StatelessWidget {
           return BeforeTakenTile(pillAlarm: pillAlarm);
         }
 
-        final todayTakeHistory = historyBox.values.singleWhere(
+        final todayTakenHistory = historyBox.values.singleWhere(
           (history) =>
               history.pillId == pillAlarm.id &&
               history.alarmTime == pillAlarm.alarmTime &&
@@ -100,11 +100,14 @@ class TodayPage extends StatelessWidget {
         );
 
         /// Check dummy data
-        if (todayTakeHistory.pillId == -1 && todayTakeHistory.alarmTime == '') {
+        if (todayTakenHistory.pillId == -1 && todayTakenHistory.alarmTime == '') {
           return BeforeTakenTile(pillAlarm: pillAlarm);
         }
 
-        return AfterTakenTile(pillAlarm: pillAlarm);
+        return AfterTakenTile(
+          pillAlarm: pillAlarm,
+          history: todayTakenHistory,
+        );
       },
     );
   }

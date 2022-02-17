@@ -2,7 +2,7 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   errors:
-    unwaited_futures: warning
+    unawaited_futures: warning
 
 linter:
   rules:

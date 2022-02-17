@@ -10,9 +10,13 @@ class TimeSettingBottomSheet extends StatelessWidget {
   const TimeSettingBottomSheet({
     Key? key,
     required this.initTime,
+    this.bottomWidget,
+    this.submitTitle = '선택',
   }) : super(key: key);
 
   final String initTime;
+  final Widget? bottomWidget;
+  final String submitTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,9 @@ class TimeSettingBottomSheet extends StatelessWidget {
             onDateTimeChanged: (dateTime) => setTime = dateTime,
           ),
         ),
-        const SizedBox(height: regularSpace),
+        const SizedBox(height: smallSpace),
+        if (bottomWidget != null) bottomWidget!,
+        const SizedBox(width: smallSpace),
         Row(
           children: [
             SelectButton(
@@ -41,7 +47,7 @@ class TimeSettingBottomSheet extends StatelessWidget {
             ),
             const SizedBox(width: smallSpace),
             SelectButton(
-              text: '선택',
+              text: submitTitle,
               isPriority: true,
               onPressed: () => Navigator.pop(context, setTime), // send the setTime value to the BottomSheet
             ),

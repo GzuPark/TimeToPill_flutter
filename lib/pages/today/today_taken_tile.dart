@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
@@ -48,33 +49,45 @@ class BeforeTakenTile extends StatelessWidget {
           Text('${pillAlarm.name},', style: textStyle),
           TileActionButton(
             title: '지금',
-            onTap: () {},
+            onTap: () {
+              historyRepository.addHistory(
+                PillHistory(
+                  pillId: pillAlarm.id,
+                  alarmTime: pillAlarm.alarmTime,
+                  takenTime: DateTime.now(),
+                ),
+              );
+            },
           ),
           Text('|', style: textStyle),
           TileActionButton(
             title: '아까',
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => TimeSettingBottomSheet(initTime: pillAlarm.alarmTime),
-              ).then((takeTime) {
-                /// Initial value of the takeTime is same as initTime
-                /// Therefore, this value always has the value and its type is DateTime
-                /// Do not need to check about takeTime data and its type
-                historyRepository.addHistory(
-                  PillHistory(
-                    pillId: pillAlarm.id,
-                    alarmTime: pillAlarm.alarmTime,
-                    takenTime: takeTime,
-                  ),
-                );
-              });
-            },
+            onTap: () => _onTapTakenPast(context),
           ),
           Text('먹었어요!', style: textStyle),
         ],
       ),
     ];
+  }
+
+  void _onTapTakenPast(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => TimeSettingBottomSheet(initTime: pillAlarm.alarmTime),
+    ).then((takenTime) {
+      /// Initial value of the takenTime is same as initTime
+      /// Therefore, this value always has the value and its type is DateTime
+      /// But, it will return null if you choose the '취소' button
+      if (takenTime == null) return;
+
+      historyRepository.addHistory(
+        PillHistory(
+          pillId: pillAlarm.id,
+          alarmTime: pillAlarm.alarmTime,
+          takenTime: takenTime,
+        ),
+      );
+    });
   }
 }
 
@@ -82,9 +95,11 @@ class AfterTakenTile extends StatelessWidget {
   const AfterTakenTile({
     Key? key,
     required this.pillAlarm,
+    required this.history,
   }) : super(key: key);
 
   final PillAlarm pillAlarm;
+  final PillHistory history;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +141,7 @@ class AfterTakenTile extends StatelessWidget {
           style: textStyle,
           children: [
             TextSpan(
-              text: '20:09',
+              text: takenTimeStr,
               style: textStyle?.copyWith(fontWeight: FontWeight.w500),
             ),
           ],
@@ -138,14 +153,47 @@ class AfterTakenTile extends StatelessWidget {
         children: [
           Text('${pillAlarm.name},', style: textStyle),
           TileActionButton(
-            title: '20시 09분에',
-            onTap: () {},
+            title: DateFormat('HH시 mm분에').format(history.takenTime),
+            onTap: () => _onTapChange(context),
           ),
           Text('먹었어요!', style: textStyle),
         ],
       ),
     ];
   }
+
+  void _onTapChange(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => TimeSettingBottomSheet(
+        initTime: takenTimeStr,
+        bottomWidget: TextButton(
+          child: const Text('복약 시간을 지우고 싶어요.'),
+          onPressed: () {
+            historyRepository.deleteHistory(history.key);
+            Navigator.pop(context);
+          },
+        ),
+        submitTitle: '수정',
+      ),
+    ).then((takenTime) {
+      /// Initial value of the takenTime is same as initTime
+      /// Therefore, this value always has the value and its type is DateTime
+      /// But, it will return null if you choose the '취소' button
+      if (takenTime == null) return;
+
+      historyRepository.updateHistory(
+        key: history.key,
+        pill: PillHistory(
+          pillId: pillAlarm.id,
+          alarmTime: pillAlarm.alarmTime,
+          takenTime: takenTime,
+        ),
+      );
+    });
+  }
+
+  String get takenTimeStr => DateFormat('HH:mm').format(history.takenTime);
 }
 
 /// Check the image path is null or not in the CircleAvatar (foregroundImage method)
