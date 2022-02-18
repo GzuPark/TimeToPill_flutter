@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:time_to_pill/components/project_themes.dart';
 import 'package:time_to_pill/pages/home_page.dart';
@@ -14,6 +15,9 @@ final historyRepository = HistoryRepository();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// Initialize the Local DateFormat
+  await initializeDateFormatting();
 
   /// Initialize the Notification service
   await notification.initializeTimezone();

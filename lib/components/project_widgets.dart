@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/components/project_page_route.dart';
+import 'package:time_to_pill/pages/image_detail_page.dart';
 
 class BottomSheetBody extends StatelessWidget {
   const BottomSheetBody({
@@ -48,4 +54,32 @@ void showPermissionDenied(
       ),
     ),
   );
+}
+
+/// Check the image path is null or not in the CircleAvatar (foregroundImage method)
+/// This action occurs to when the save the pill information without any image from the gallery or camera
+/// The pill's image is not required in this application, so we allow to save the pill without the image
+/// Show fitted size of the original image if the imagePath is not null
+/// Otherwise, the Button cannot activate if the imagePath is null
+class PillImageButton extends StatelessWidget {
+  const PillImageButton({
+    Key? key,
+    required this.imagePath,
+  }) : super(key: key);
+
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      child: CircleAvatar(
+        radius: radiusCircleAvatar,
+        foregroundImage: imagePath == null ? null : FileImage(File(imagePath!)),
+      ),
+      onPressed: imagePath == null
+          ? null
+          : () => Navigator.push(context, FadePageRoute(page: ImageDetailPage(imagePath: imagePath!))),
+    );
+  }
 }

@@ -21,11 +21,23 @@ const double submitButtonHeight = 48.0;
 /// 40.0
 const double radiusCircleAvatar = 40.0;
 
+/// 4.0
+const double tinyRadiusCircleAvatar = 4.0;
+
+/// 130.0
+const double sectionDividerLength = 130.0;
+
 /// 1.0
 const double sectionDividerHeight = 1.0;
 
+/// 1.0
+const double sectionDividerWidth = 1.0;
+
 /// 2.0
 const double sectionDividerThickness = 1.0;
+
+/// 1.6
+const double historyDateTextHeight = 1.6;
 
 /// `horizontal`: 20.0
 /// `vertical`: 10.0
@@ -57,3 +69,5 @@ const EdgeInsetsGeometry addAlarmButtonPadding = EdgeInsets.symmetric(
 const EdgeInsetsGeometry pillListTilePadding = EdgeInsets.symmetric(
   vertical: 20.0,
 );
+
+const AlignmentGeometry historyPointAlignment = Alignment(0.0, -0.25);

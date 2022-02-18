@@ -44,7 +44,7 @@ class _AddPillPageState extends State<AddPillPage> {
             ),
             const SizedBox(height: regularSpace),
             Center(
-              child: PillImageButton(
+              child: _PillImageButton(
                 changedImageFile: (File? value) => _pillImage = value,
               ),
             ),
@@ -90,8 +90,8 @@ class _AddPillPageState extends State<AddPillPage> {
 }
 
 /// This widget from the CircleAvatar which located in the center of the HomePage
-class PillImageButton extends StatefulWidget {
-  const PillImageButton({
+class _PillImageButton extends StatefulWidget {
+  const _PillImageButton({
     Key? key,
     required this.changedImageFile,
   }) : super(key: key);
@@ -100,10 +100,10 @@ class PillImageButton extends StatefulWidget {
   final ValueChanged<File?> changedImageFile;
 
   @override
-  State<PillImageButton> createState() => _PillImageButtonState();
+  State<_PillImageButton> createState() => _PillImageButtonState();
 }
 
-class _PillImageButtonState extends State<PillImageButton> {
+class _PillImageButtonState extends State<_PillImageButton> {
   File? _pickedImage;
 
   @override
