@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -32,6 +33,9 @@ class NotificationService {
     await notification.initialize(initializationSettings);
   }
 
+  /// Unique ID
+  String alarmId(int pillId, String alarmTime) => '${pillId.toString()}${alarmTime.replaceAll(':', '')}';
+
   /// Future<bool>
   /// if true, add notification title, body, and its time
   /// if false, call the snack bar for setting the alert permission
@@ -59,8 +63,7 @@ class NotificationService {
         : now.day;
 
     /// Unique ID
-    String alarmTimeId = alarmTimeStr.replaceAll(':', '');
-    alarmTimeId = pillId.toString() + alarmTimeId;
+    String alarmTimeId = alarmId(pillId, alarmTimeStr);
 
     /// Add scheduled notification
     final details = _notificationDetails(
@@ -87,7 +90,10 @@ class NotificationService {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
+      payload: alarmTimeId,
     );
+
+    log('[notification list] ${await pendingNotificationIds}');
 
     return true;
   }
@@ -127,5 +133,22 @@ class NotificationService {
       android: android,
       iOS: ios,
     );
+  }
+
+  /// Remove the notification based on the unique ids
+  /// This action can remove several notifications due to that the pill can have more than one alert
+  Future<void> deleteMultipleAlarm(List<String> alarmIds) async {
+    log('[before delete notification list] ${await pendingNotificationIds}');
+    for (var alarmId in alarmIds) {
+      final id = int.parse(alarmId);
+      await notification.cancel(id);
+    }
+    log('[after delete notification list] ${await pendingNotificationIds}');
+  }
+
+  /// Get the notification list (a.k.a. waiting for you)
+  Future<List<int>> get pendingNotificationIds {
+    final list = notification.pendingNotificationRequests().then((value) => value.map((e) => e.id).toList());
+    return list;
   }
 }

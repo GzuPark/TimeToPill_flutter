@@ -6,6 +6,7 @@ import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
 import 'package:time_to_pill/models/pill_history.dart';
+import 'package:time_to_pill/pages/bottom_sheet/more_action_bottom_sheet.dart';
 import 'package:time_to_pill/pages/bottom_sheet/time_setting_bottom_sheet.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
 
@@ -31,7 +32,7 @@ class BeforeTakenTile extends StatelessWidget {
             children: _buildTileBody(context, textStyle),
           ),
         ),
-        const MoreButton(),
+        MoreButton(pillAlarm: pillAlarm),
       ],
     );
   }
@@ -131,7 +132,7 @@ class AfterTakenTile extends StatelessWidget {
             children: _buildTileBody(context, textStyle),
           ),
         ),
-        const MoreButton(),
+        MoreButton(pillAlarm: pillAlarm),
       ],
     );
   }
@@ -226,16 +227,69 @@ class TileActionButton extends StatelessWidget {
   }
 }
 
+/// Pop bottom sheet for more actions: modify, remove only information, remove information & history
+/// Modify
+///
+/// Remove only information
+///   - Remove Pill data in the Pill's hive box
+///   - Remove list views in the TodayPage
+///   - Possible to see in the HistoryPage forever
+/// Remove all (information & history)
+///   - Remove Pill & PillHistory data in the hive boxes
+///   - Cannot see in the all page view
 class MoreButton extends StatelessWidget {
   const MoreButton({
     Key? key,
+    required this.pillAlarm,
   }) : super(key: key);
+
+  final PillAlarm pillAlarm;
 
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
       child: const Icon(CupertinoIcons.ellipsis_vertical),
-      onPressed: () {},
+      onPressed: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) => MoreActionBottomSheet(
+                  onPressedModify: () {},
+                  onPressedRemoveOnlyInfo: () {
+                    /// Remove notifications
+                    notification.deleteMultipleAlarm(alarmIds);
+
+                    /// Remove Pill in the Hive box
+                    pillRepository.deletePill(pillAlarm.key);
+
+                    Navigator.pop(context);
+                  },
+                  onPressedRemoveAll: () {
+                    /// Remove notifications
+                    notification.deleteMultipleAlarm(alarmIds);
+
+                    /// Remove PillHistory in the Hive box
+                    historyRepository.deleteAllHistories(keys);
+
+                    /// Remove Pill in the Hive box
+                    pillRepository.deletePill(pillAlarm.key);
+
+                    Navigator.pop(context);
+                  },
+                ));
+      },
     );
+  }
+
+  List<String> get alarmIds {
+    final pill = pillRepository.pillBox.values.singleWhere((element) => element.id == pillAlarm.id);
+    final alarmIds = pill.alarms.map((alarmStr) => notification.alarmId(pillAlarm.id, alarmStr)).toList();
+    return alarmIds;
+  }
+
+  Iterable<int> get keys {
+    final histories = historyRepository.historyBox.values
+        .where((history) => history.pillId == pillAlarm.id && history.pillKey == pillAlarm.key);
+    final keys = histories.map((history) => history.key as int);
+    return keys;
   }
 }

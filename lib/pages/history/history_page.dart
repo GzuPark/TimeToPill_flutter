@@ -93,8 +93,8 @@ class HistoryTimeTile extends StatelessWidget {
             children: [
               const SizedBox(width: regularSpace),
               Visibility(
-                visible: pill.imagePath != null,
-                child: PillImageButton(imagePath: pill.imagePath),
+                visible: history.imagePath != null,
+                child: PillImageButton(imagePath: history.imagePath),
               ),
               const SizedBox(width: smallSpace),
               Text(

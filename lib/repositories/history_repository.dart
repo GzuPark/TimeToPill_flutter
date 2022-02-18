@@ -29,6 +29,13 @@ class HistoryRepository {
     log('result ${historyBox.values.toList()}');
   }
 
+  void deleteAllHistories(Iterable<int> keys) async {
+    await historyBox.deleteAll(keys);
+
+    log('[deleteAllHistories] delete (keys: $keys)');
+    log('result ${historyBox.values.toList()}');
+  }
+
   void updateHistory({
     required int key,
     required PillHistory pill,
