@@ -65,7 +65,7 @@ class AddAlarmPage extends StatelessWidget {
 
     /// Add lines for AlarmBox with - icon
     children.addAll(
-      _service.alarms.map(
+      _service.sortedAlarms.map(
         (alarmTime) => AlarmBox(
           time: alarmTime,
           service: _service,

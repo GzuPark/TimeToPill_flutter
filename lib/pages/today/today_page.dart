@@ -57,6 +57,9 @@ class TodayPage extends StatelessWidget {
       }
     }
 
+    /// Sorting based on the alarmTime
+    pillAlarms.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
+
     return Column(
       children: [
         const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),

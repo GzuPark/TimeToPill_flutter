@@ -21,6 +21,14 @@ class AddPillService with ChangeNotifier {
 
   Set<String> get alarms => _alarms;
 
+  Set<String> get sortedAlarms {
+    final alarmList = _alarms.toList();
+    alarmList.sort();
+
+    final newAlarms = {...alarmList};
+    return newAlarms;
+  }
+
   void addNowAlarm() {
     final now = DateTime.now();
     final nowTime = DateFormat('HH:mm').format(now);
