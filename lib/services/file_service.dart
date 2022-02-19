@@ -14,3 +14,5 @@ Future<String> saveImageToLocalDirectory(File image) async {
 
   return filePath;
 }
+
+void deleteImage(String filePath) => File(filePath).delete(recursive: true);

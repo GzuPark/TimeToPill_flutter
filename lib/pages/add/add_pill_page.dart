@@ -7,13 +7,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
+import 'package:time_to_pill/main.dart';
+import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/pages/add/add_alarm_page.dart';
 import 'package:time_to_pill/pages/bottom_sheet/pick_image_bottom_sheet.dart';
 
 import 'components/add_page_widget.dart';
 
 class AddPillPage extends StatefulWidget {
-  const AddPillPage({Key? key}) : super(key: key);
+  const AddPillPage({
+    Key? key,
+    this.updatePillId = -1,
+  }) : super(key: key);
+
+  final int updatePillId;
 
   @override
   State<AddPillPage> createState() => _AddPillPageState();
@@ -21,8 +28,18 @@ class AddPillPage extends StatefulWidget {
 
 class _AddPillPageState extends State<AddPillPage> {
   // Control to input the pill's name
-  final TextEditingController _pillNameController = TextEditingController();
+  late TextEditingController _pillNameController;
   File? _pillImage;
+
+  bool get _isUpdate => widget.updatePillId != -1;
+  Pill get _updatePill => pillRepository.pillBox.values.singleWhere((pill) => pill.id == widget.updatePillId);
+
+  @override
+  void initState() {
+    super.initState();
+    _pillNameController = _isUpdate ? TextEditingController(text: _updatePill.name) : TextEditingController();
+    _pillImage = _isUpdate && _updatePill.imagePath != null ? File(_updatePill.imagePath!) : null;
+  }
 
   @override
   void dispose() {
@@ -47,6 +64,7 @@ class _AddPillPageState extends State<AddPillPage> {
             Center(
               child: _PillImageButton(
                 changedImageFile: (File? value) => _pillImage = value,
+                updateImage: _pillImage,
               ),
             ),
             const SizedBox(height: largeSpace),
@@ -84,6 +102,7 @@ class _AddPillPageState extends State<AddPillPage> {
         page: AddAlarmPage(
           pillImage: _pillImage,
           pillName: _pillNameController.text,
+          updatePillId: widget.updatePillId,
         ),
       ),
     );
@@ -95,10 +114,12 @@ class _PillImageButton extends StatefulWidget {
   const _PillImageButton({
     Key? key,
     required this.changedImageFile,
+    this.updateImage,
   }) : super(key: key);
 
   /// Connect a variable with the upper layer state
   final ValueChanged<File?> changedImageFile;
+  final File? updateImage;
 
   @override
   State<_PillImageButton> createState() => _PillImageButtonState();
@@ -106,6 +127,12 @@ class _PillImageButton extends StatefulWidget {
 
 class _PillImageButtonState extends State<_PillImageButton> {
   File? _pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _pickedImage = widget.updateImage;
+  }
 
   @override
   Widget build(BuildContext context) {

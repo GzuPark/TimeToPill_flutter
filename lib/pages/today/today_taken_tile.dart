@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/components/project_page_route.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
 import 'package:time_to_pill/models/pill_history.dart';
+import 'package:time_to_pill/pages/add/add_pill_page.dart';
 import 'package:time_to_pill/pages/bottom_sheet/more_action_bottom_sheet.dart';
 import 'package:time_to_pill/pages/bottom_sheet/time_setting_bottom_sheet.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
@@ -229,7 +231,7 @@ class TileActionButton extends StatelessWidget {
 
 /// Pop bottom sheet for more actions: modify, remove only information, remove information & history
 /// Modify
-///
+///   - Route to the AddPillPage with pill's information
 /// Remove only information
 ///   - Remove Pill data in the Pill's hive box
 ///   - Remove list views in the TodayPage
@@ -253,10 +255,15 @@ class MoreButton extends StatelessWidget {
         showModalBottomSheet(
             context: context,
             builder: (context) => MoreActionBottomSheet(
-                  onPressedModify: () {},
+                  onPressedModify: () {
+                    Navigator.push(
+                      context,
+                      FadePageRoute(page: AddPillPage(updatePillId: pillAlarm.id)),
+                    ).then((_) => Navigator.maybePop(context));
+                  },
                   onPressedRemoveOnlyInfo: () {
                     /// Remove notifications
-                    notification.deleteMultipleAlarm(alarmIds);
+                    notification.deleteMultipleAlarms(alarmIds);
 
                     /// Remove Pill in the Hive box
                     pillRepository.deletePill(pillAlarm.key);
@@ -265,7 +272,7 @@ class MoreButton extends StatelessWidget {
                   },
                   onPressedRemoveAll: () {
                     /// Remove notifications
-                    notification.deleteMultipleAlarm(alarmIds);
+                    notification.deleteMultipleAlarms(alarmIds);
 
                     /// Remove PillHistory in the Hive box
                     historyRepository.deleteAllHistories(keys);

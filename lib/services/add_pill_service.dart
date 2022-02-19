@@ -1,7 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
+import 'package:time_to_pill/main.dart';
+
 class AddPillService with ChangeNotifier {
+  AddPillService(int updatePillId) {
+    final isUpdate = updatePillId != -1;
+    if (isUpdate) {
+      final updateAlarms = pillRepository.pillBox.values.singleWhere((pill) => pill.id == updatePillId).alarms;
+      _alarms.clear();
+      _alarms.addAll(updateAlarms);
+    }
+  }
+
   final Set<String> _alarms = {
     '08:00',
     '13:00',

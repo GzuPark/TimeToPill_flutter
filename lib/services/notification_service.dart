@@ -137,7 +137,7 @@ class NotificationService {
 
   /// Remove the notification based on the unique ids
   /// This action can remove several notifications due to that the pill can have more than one alert
-  Future<void> deleteMultipleAlarm(List<String> alarmIds) async {
+  Future<void> deleteMultipleAlarms(Iterable<String> alarmIds) async {
     log('[before delete notification list] ${await pendingNotificationIds}');
     for (var alarmId in alarmIds) {
       final id = int.parse(alarmId);
