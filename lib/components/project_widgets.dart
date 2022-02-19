@@ -76,6 +76,13 @@ class PillImageButton extends StatelessWidget {
       child: CircleAvatar(
         radius: radiusCircleAvatar,
         foregroundImage: imagePath == null ? null : FileImage(File(imagePath!)),
+        child: imagePath == null
+            ? const Icon(
+                Icons.medical_services_outlined,
+                size: radiusCircleAvatar * 0.8,
+                color: Colors.grey,
+              )
+            : null,
       ),
       onPressed: imagePath == null
           ? null

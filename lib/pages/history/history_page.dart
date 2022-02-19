@@ -7,6 +7,7 @@ import 'package:time_to_pill/components/project_widgets.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_history.dart';
+import 'package:time_to_pill/pages/history/history_empty_page.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -32,13 +33,16 @@ class HistoryPage extends StatelessWidget {
 
   Widget _buildHistoryListView(BuildContext context, Box<PillHistory> historyBox, _) {
     final histories = historyBox.values.toList().reversed.toList();
-    return ListView.builder(
-      itemCount: histories.length,
-      itemBuilder: (context, index) {
-        final history = histories[index];
-        return HistoryTimeTile(history: history);
-      },
-    );
+
+    return histories.isEmpty
+        ? const HistoryEmpty()
+        : ListView.builder(
+            itemCount: histories.length,
+            itemBuilder: (context, index) {
+              final history = histories[index];
+              return HistoryTimeTile(history: history);
+            },
+          );
   }
 }
 
