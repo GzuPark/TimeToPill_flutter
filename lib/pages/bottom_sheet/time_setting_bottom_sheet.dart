@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:time_to_pill/components/project_colors.dart';
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
+import 'package:time_to_pill/main.dart';
 
 class TimeSettingBottomSheet extends StatelessWidget {
   const TimeSettingBottomSheet({
@@ -29,10 +30,15 @@ class TimeSettingBottomSheet extends StatelessWidget {
       children: [
         SizedBox(
           height: timePickerBoxHeight,
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.time,
-            initialDateTime: initDateTime,
-            onDateTimeChanged: (dateTime) => setTime = dateTime,
+          child: CupertinoTheme(
+            data: CupertinoThemeData(
+              brightness: configRepository.isDark ? Brightness.dark : Brightness.light,
+            ),
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.time,
+              initialDateTime: initDateTime,
+              onDateTimeChanged: (dateTime) => setTime = dateTime,
+            ),
           ),
         ),
         const SizedBox(height: smallSpace),
@@ -78,8 +84,16 @@ class SelectButton extends StatelessWidget {
         child: Text(text),
         style: ElevatedButton.styleFrom(
           textStyle: Theme.of(context).textTheme.subtitle1,
-          primary: isPriority ? null : Colors.white,
-          onPrimary: isPriority ? null : ProjectColors.primaryLightColor,
+          primary: isPriority
+              ? null
+              : configRepository.isDark
+                  ? ProjectColors.primaryLightColor
+                  : Colors.white,
+          onPrimary: isPriority
+              ? null
+              : configRepository.isDark
+                  ? ProjectColors.primaryDarkColor
+                  : ProjectColors.primaryLightColor,
         ),
         onPressed: onPressed,
       ),
