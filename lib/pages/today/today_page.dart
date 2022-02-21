@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
+import 'package:time_to_pill/config/switch_theme_mode.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_alarm.dart';
@@ -17,9 +18,15 @@ class TodayPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '오늘 복용할 약은?',
-          style: Theme.of(context).textTheme.headline4,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '오늘 복용할 약은?',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            switchThemeMode(),
+          ],
         ),
         const SizedBox(height: regularSpace),
         Expanded(

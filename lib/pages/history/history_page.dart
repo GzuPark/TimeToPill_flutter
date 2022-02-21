@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_widgets.dart';
+import 'package:time_to_pill/config/switch_theme_mode.dart';
 import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/models/pill.dart';
 import 'package:time_to_pill/models/pill_history.dart';
@@ -17,7 +18,13 @@ class HistoryPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('잘 복용했어요 👏', style: Theme.of(context).textTheme.headline4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('잘 복용했어요 👏', style: Theme.of(context).textTheme.headline4),
+            switchThemeMode(),
+          ],
+        ),
         const SizedBox(height: regularSpace),
         const Divider(height: sectionDividerHeight, thickness: sectionDividerThickness),
         Expanded(

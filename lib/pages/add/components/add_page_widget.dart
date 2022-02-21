@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:time_to_pill/components/project_constants.dart';
 
 /// Main purpose of this Widget that apply same padding & alignment etc.

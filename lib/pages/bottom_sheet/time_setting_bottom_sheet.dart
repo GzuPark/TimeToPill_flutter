@@ -79,7 +79,7 @@ class SelectButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           textStyle: Theme.of(context).textTheme.subtitle1,
           primary: isPriority ? null : Colors.white,
-          onPrimary: isPriority ? null : ProjectColors.primaryColor,
+          onPrimary: isPriority ? null : ProjectColors.primaryLightColor,
         ),
         onPressed: onPressed,
       ),

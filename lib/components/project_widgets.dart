@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
-import 'package:time_to_pill/pages/image_detail_page.dart';
+import 'package:time_to_pill/pages/detail/image_detail_page.dart';
 
 class BottomSheetBody extends StatelessWidget {
   const BottomSheetBody({

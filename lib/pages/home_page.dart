@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:time_to_pill/components/project_colors.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
+import 'package:time_to_pill/config/switch_theme_mode.dart';
+import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/pages/add/add_pill_page.dart';
 import 'package:time_to_pill/pages/history/history_page.dart';
 import 'package:time_to_pill/pages/today/today_page.dart';
@@ -50,16 +53,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  CupertinoButton buildCupertinoButton(int index, IconData icon) {
-    return CupertinoButton(
-      child: Icon(
-        icon,
-        color: _currentIndex == index ? ProjectColors.primaryColor : Colors.grey.shade300,
-      ),
-      onPressed: () {
-        setState(() => _currentIndex = index);
-      },
-    );
+  ValueListenableBuilder<Object?> buildCupertinoButton(int index, IconData icon) {
+    return ValueListenableBuilder(
+        valueListenable: configRepository.pillConfigBox.listenable(),
+        builder: (BuildContext context, __, _) {
+          return CupertinoButton(
+            child: Icon(
+              icon,
+              color: _currentIndex == index ? getActiveColor : getInactiveColor,
+            ),
+            onPressed: () {
+              setState(() => _currentIndex = index);
+            },
+          );
+        });
   }
 
   void _onRouteAddPage() {

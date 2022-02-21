@@ -10,12 +10,14 @@ class ProjectHive {
     Hive.registerAdapter<Pill>(PillAdapter());
     Hive.registerAdapter<PillHistory>(PillHistoryAdapter());
 
+    await Hive.openBox(ProjectHiveBox.config);
     await Hive.openBox<Pill>(ProjectHiveBox.pill);
     await Hive.openBox<PillHistory>(ProjectHiveBox.history);
   }
 }
 
 class ProjectHiveBox {
+  static const String config = 'timeToPillConfig';
   static const String pill = 'timeToPill';
   static const String history = 'timeToPillHistory';
 }
