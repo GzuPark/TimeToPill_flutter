@@ -27,6 +27,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0.0,
+      ),
       body: Padding(
         padding: pagePadding,
         child: SafeArea(

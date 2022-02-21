@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'package:time_to_pill/components/project_themes.dart';
 import 'package:time_to_pill/pages/home_page.dart';
 import 'package:time_to_pill/repositories/config_repository.dart';
 import 'package:time_to_pill/repositories/history_repository.dart';
@@ -40,7 +41,10 @@ class TimeToPillApp extends StatelessWidget {
         valueListenable: configRepository.pillConfigBox.listenable(),
         builder: (BuildContext context, __, _) {
           return MaterialApp(
-            theme: configRepository.getTheme,
+            debugShowCheckedModeBanner: false,
+            theme: ProjectThemes.lightTheme,
+            darkTheme: ProjectThemes.darkTheme,
+            themeMode: configRepository.isDark ? ThemeMode.dark : ThemeMode.light,
 
             /// Fixed text scale, not depends on each device setting
             builder: (context, child) => MediaQuery(
