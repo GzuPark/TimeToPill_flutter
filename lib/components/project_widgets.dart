@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:time_to_pill/components/project_colors.dart';
 
 import 'package:time_to_pill/components/project_constants.dart';
 import 'package:time_to_pill/components/project_page_route.dart';
+import 'package:time_to_pill/main.dart';
 import 'package:time_to_pill/pages/detail/image_detail_page.dart';
 
 class BottomSheetBody extends StatelessWidget {
@@ -36,21 +38,61 @@ void showPermissionDenied(
 }) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '$permission 권한이 없습니다.',
-            style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const TextButton(
-            child: Text('설정창으로 이동'),
-            onPressed: openAppSettings,
-          ),
-        ],
+      duration: const Duration(seconds: 5),
+      content: SizedBox(
+        height: largeSpace,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '$permission 권한이 없습니다.',
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    color: configRepository.isDark ? ProjectColors.primaryLightColor : Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const TextButton(
+              child: Text('설정창으로 이동'),
+              onPressed: openAppSettings,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+void showCompleteAddPill(
+  BuildContext context, {
+  required String action,
+  required bool permission,
+}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      duration: const Duration(seconds: 5),
+      content: SizedBox(
+        height: largeSpace,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '$action 완료했습니다.',
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    color: configRepository.isDark ? ProjectColors.primaryLightColor : Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            permission
+                ? Container()
+                : Text(
+                    '알람은 등록되지 않았습니다.',
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                          color: configRepository.isDark ? ProjectColors.primaryLightColor : Colors.white,
+                          fontSize: 11,
+                        ),
+                  ),
+          ],
+        ),
       ),
     ),
   );

@@ -84,20 +84,17 @@ class AddAlarmPage extends StatelessWidget {
   }
 
   Future<void> _onAddPill(BuildContext context) async {
-    bool permitNotification = false;
+    bool isPermitNotification = false;
 
     /// Add Notifications
     for (var alarm in _service.alarms) {
-      permitNotification = await notification.addNotification(
+      isPermitNotification = await notification.addNotification(
         pillId: pillRepository.newId,
         alarmTimeStr: alarm,
         title: '$alarm 약 먹을 시간이에요',
         body: '$pillName 복약했다고 알려주세요',
       );
     }
-
-    /// Stop the process if the notification is not permitted
-    if (!permitNotification) return showPermissionDenied(context, permission: '알람');
 
     /// Save the image to local device
     String? imageFilePath;
@@ -116,12 +113,22 @@ class AddAlarmPage extends StatelessWidget {
 
     /// Pop the pages until the HomePage (root or starting page)
     Navigator.popUntil(context, (route) => route.isFirst);
+
+    /// Reject: 2022/02/22
+    ///   Guideline 4.5.4
+    ///   Push notifications must be optional and must obtain the user's consent to be used within the app
+
+    /// Show the completion using bby snack bar
+    showCompleteAddPill(context, action: '추가를', permission: isPermitNotification);
+
+    /// Stop the process if the notification is not permitted
+    if (!isPermitNotification) return showPermissionDenied(context, permission: '알람');
   }
 
   Pill get _updatePill => pillRepository.pillBox.values.singleWhere((pill) => pill.id == updatePillId);
 
   Future<void> _onUpdatePill(BuildContext context) async {
-    bool permitNotification = false;
+    bool isPermitNotification = false;
 
     /// Remove previous Notifications
     final alarmIds = _updatePill.alarms.map((alarmTime) => notification.alarmId(updatePillId, alarmTime));
@@ -129,16 +136,13 @@ class AddAlarmPage extends StatelessWidget {
 
     /// Add Notifications
     for (var alarm in _service.alarms) {
-      permitNotification = await notification.addNotification(
+      isPermitNotification = await notification.addNotification(
         pillId: updatePillId,
         alarmTimeStr: alarm,
         title: '$alarm 약 먹을 시간이에요',
         body: '$pillName 복약했다고 알려주세요',
       );
     }
-
-    /// Stop the process if the notification is not permitted
-    if (!permitNotification) return showPermissionDenied(context, permission: '알람');
 
     /// Do not need to change imagePath if users do not use new images etc.
     String? imageFilePath = _updatePill.imagePath;
@@ -166,6 +170,16 @@ class AddAlarmPage extends StatelessWidget {
 
     /// Pop the pages until the HomePage (root or starting page)
     Navigator.popUntil(context, (route) => route.isFirst);
+
+    /// Reject: 2022/02/22
+    ///   Guideline 4.5.4
+    ///   Push notifications must be optional and must obtain the user's consent to be used within the app
+
+    /// Show the completion using bby snack bar
+    showCompleteAddPill(context, action: '수정을', permission: isPermitNotification);
+
+    /// Stop the process if the notification is not permitted
+    if (!isPermitNotification) return showPermissionDenied(context, permission: '알람');
   }
 }
 

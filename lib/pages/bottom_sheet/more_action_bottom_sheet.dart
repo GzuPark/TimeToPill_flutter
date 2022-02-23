@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:time_to_pill/components/project_widgets.dart';
+import 'package:time_to_pill/main.dart';
 
 class MoreActionBottomSheet extends StatelessWidget {
   const MoreActionBottomSheet({
@@ -27,13 +28,23 @@ class MoreActionBottomSheet extends StatelessWidget {
         ),
         TextButton(
           onPressed: onPressedRemoveOnlyInfo,
-          style: TextButton.styleFrom(primary: Colors.red),
-          child: const Text('약 정보 삭제'),
+          child: Text(
+            '약 정보 삭제',
+            style: Theme.of(context).textTheme.button!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: configRepository.isDark ? Colors.redAccent.shade100 : Colors.red,
+                ),
+          ),
         ),
         TextButton(
           onPressed: onPressedRemoveAll,
-          style: TextButton.styleFrom(primary: Colors.red),
-          child: const Text('약 기록 및 정보 삭제'),
+          child: Text(
+            '약 기록 및 정보 삭제',
+            style: Theme.of(context).textTheme.button!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: configRepository.isDark ? Colors.redAccent.shade100 : Colors.red,
+                ),
+          ),
         ),
       ],
     );
