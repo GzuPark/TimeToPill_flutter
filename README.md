@@ -13,15 +13,16 @@
 
 ## Screenshots
 
-| ![](./assets/docs/light_01.png) | ![](./assets/docs/light_02.png) | ![](./assets/docs/light_03.png) | ![](./assets/docs/light_04.png) | ![](./assets/docs/light_05.png) | ![](./assets/docs/light_06.png) | ![](./assets/docs/light_07.png) | ![](./assets/docs/light_08.png) |
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| ![](./assets/docs/dark_01.png) | ![](./assets/docs/dark_02.png) | ![](./assets/docs/dark_03.png) | ![](./assets/docs/dark_04.png) | ![](./assets/docs/dark_05.png) | ![](./assets/docs/dark_06.png) | ![](./assets/docs/dark_07.png) | ![](./assets/docs/dark_08.png) |
+| ![](./assets/docs/light_01.png) | ![](./assets/docs/light_02.png) | ![](./assets/docs/light_03.png) | ![](./assets/docs/light_04.png) |
+|:--:|:--:|:--:|:--:|
+| ![](./assets/docs/light_05.png) | ![](./assets/docs/light_06.png) | ![](./assets/docs/dark_01.png) | ![](./assets/docs/dark_02.png) |
+| ![](./assets/docs/dark_03.png) | ![](./assets/docs/dark_04.png) | ![](./assets/docs/dark_05.png) | ![](./assets/docs/dark_06.png) |
 
 ## Get the Application
 
 <img src='./assets/docs/time_to_pill.png' width='150' />
 
-- [App Store (iOS)]() - Under review
+- [App Store (iOS)](https://apps.apple.com/app/%EC%95%BD%EC%86%8D-%EB%A7%A4%EC%9D%BC-%EC%95%BD%EC%9D%84-%EB%A8%B9%EB%8A%94-%EB%82%98%EC%99%80%EC%9D%98-%EC%95%BD%EC%86%8D/id1611014988) _2022/02/23_
 - [Googl Play Store (Android)]() - Under review
 
 ## Versions
